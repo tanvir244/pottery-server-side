@@ -39,17 +39,47 @@ async function run() {
       res.send(result);
     })
 
-    app.get(`/addCraftItems/:id`, async(req, res) => {
+    app.get('/addCraftItems/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
       const result = await craftCollection.findOne(query);
       res.send(result);
     })
 
+    // app.get('/updateDataForm/:id', async(req, res) => {
+    //   const id = req.params.id;
+    //   const query = {_id: new ObjectId(id)};
+    //   const result = await craftCollection.findOne(id).toArray();
+    //   res.send(result);
+    // })
+
     app.post('/addCraftItems', async (req, res) => {
       const newCraftItems = req.body;
       console.log(newCraftItems);
       const result = await craftCollection.insertOne(newCraftItems);
+      res.send(result);
+    })
+
+    app.put('/addCraftItems/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedData = req.body;
+      const data = {
+        $set: {
+          itemName: updatedData.itemName,
+          subcategory: updatedData.subcategory,
+          description: updatedData.description,
+          price: updatedData.price,
+          rating: updatedData.rating,
+          customization: updatedData.customization,
+          processTime: updatedData.processTime,
+          stock: updatedData.stock,
+          userName: updatedData.userName,
+          photoURL: updatedData.photoURL
+        }
+      }
+      const result = await craftCollection.updateOne(filter, data, options);
       res.send(result);
     })
 
