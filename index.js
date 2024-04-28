@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -25,6 +25,42 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+    const craftCollection = client.db('craftDB').collection('craft');
+
+    app.get('/addCraftItems', async (req, res) => {
+      const cursor = craftCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
+    app.get('/myItems/:email', async (req, res) => {
+      const result = await craftCollection.find({ userEmail: req.params.email }).toArray();
+      res.send(result);
+    })
+
+    app.get(`/addCraftItems/:id`, async(req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await craftCollection.findOne(query);
+      res.send(result);
+    })
+
+    app.post('/addCraftItems', async (req, res) => {
+      const newCraftItems = req.body;
+      console.log(newCraftItems);
+      const result = await craftCollection.insertOne(newCraftItems);
+      res.send(result);
+    })
+
+    app.delete(`/addCraftItems/:id`, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await craftCollection.deleteOne(query);
+      res.send(result);
+    })
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -37,10 +73,10 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Ceramics and Pottery server is running');
+  res.send('Ceramics and Pottery server is running');
 })
 
 app.listen(port, () => {
-    console.log(`Ceramics and Pottery server is running on PORT: ${port}`)
+  console.log(`Ceramics and Pottery server is running on PORT: ${port}`)
 })
 
