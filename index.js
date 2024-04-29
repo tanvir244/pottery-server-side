@@ -27,6 +27,7 @@ async function run() {
     await client.connect();
 
     const craftCollection = client.db('craftDB').collection('craft');
+    const subcategoryCollection = client.db('craftDB').collection('craftSubcategories');
 
     app.get('/addCraftItems', async (req, res) => {
       const cursor = craftCollection.find();
@@ -46,12 +47,11 @@ async function run() {
       res.send(result);
     })
 
-    // app.get('/updateDataForm/:id', async(req, res) => {
-    //   const id = req.params.id;
-    //   const query = {_id: new ObjectId(id)};
-    //   const result = await craftCollection.findOne(id).toArray();
-    //   res.send(result);
-    // })
+    app.get('/subcategory', async(req, res) => {
+      const cursor = subcategoryCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
 
     app.post('/addCraftItems', async (req, res) => {
       const newCraftItems = req.body;
