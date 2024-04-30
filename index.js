@@ -6,7 +6,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // middleware 
-app.use(cors());
+app.use (cors({origin:["http://localhost:5173","https://ceramics-and-pottery-auth.web.app"]}))
 app.use(express.json());
 
 
@@ -24,7 +24,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    client.connect();
 
     const craftCollection = client.db('craftDB').collection('craft');
     const subcategoryCollection = client.db('craftDB').collection('craftSubcategories');
